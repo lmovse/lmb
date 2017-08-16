@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<div th:replace="themes/default/header::header(title='友情链接',keywords=null)"></div>
+<body>
+<article class="main-content post-page">
+    <div id="post-content" class="post-content">
+        <h3 style="margin-top: 100px">糖果们</h3>
+        <ul class="flinks">
+            <th:block th:each="candy : ${candys}">
+                <li>🔒 <a th:href="${candy.slug}" target="_blank" th:text="${candy.name}"></a></li>
+            </th:block>
+        </ul>
+        <h3>入住须知</h3>
+        <blockquote>
+            <ul>
+                <li><p>你愿意成为我的糖果吗</p></li>
+                <li><p>奶油味的那种，咬一口就会化掉</p></li>
+                <li><p>我会好好珍藏的 :smile: </p></li>
+            </ul>
+        </blockquote>
+        <h3>屋主信息</h3>
+        <pre><code class="lang-md hljs markdown">
+            屋主名字: lmovse
+            屋子地址：http://www.lmovse.info</code></pre>
+    </div>
+</article>
+</body>
+<div th:replace="themes/default/footer::footer"></div>
+</html>
