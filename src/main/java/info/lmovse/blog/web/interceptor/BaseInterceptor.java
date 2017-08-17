@@ -8,8 +8,6 @@ import info.lmovse.blog.service.IOptionService;
 import info.lmovse.blog.service.ISiteService;
 import info.lmovse.blog.service.IUserService;
 import info.lmovse.blog.util.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -24,9 +22,6 @@ import javax.servlet.http.HttpServletResponse;
  */
 @Component
 public class BaseInterceptor extends HandlerInterceptorAdapter {
-    private static final Logger LOGGE = LoggerFactory.getLogger(BaseInterceptor.class);
-    private static final String USER_AGENT = "getUser-agent";
-
     @Resource
     private IUserService userService;
 
@@ -47,10 +42,6 @@ public class BaseInterceptor extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object o) throws Exception {
         String uri = request.getRequestURI();
-
-        LOGGE.info("UserAgent: {}", request.getHeader(USER_AGENT));
-        LOGGE.info("用户访问地址: {}, 来路地址: {}", uri, IPKit.getIpAddress(request));
-
         //请求拦截处理
         User user = TaleUtils.getLoginUser(request);
         if (null == user) {
