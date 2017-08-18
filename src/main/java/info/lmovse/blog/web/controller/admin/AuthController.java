@@ -1,16 +1,17 @@
 package info.lmovse.blog.web.controller.admin;
 
 import info.lmovse.blog.constant.AppConst;
-import info.lmovse.blog.web.controller.BaseController;
-import info.lmovse.blog.pojo.dto.LogActions;
 import info.lmovse.blog.exception.ServiceException;
 import info.lmovse.blog.pojo.bo.RestResponse;
+import info.lmovse.blog.pojo.dto.LogActions;
 import info.lmovse.blog.pojo.po.User;
 import info.lmovse.blog.service.ILogService;
 import info.lmovse.blog.service.IUserService;
 import info.lmovse.blog.util.TaleUtils;
-import org.apache.catalina.servlet4preview.http.HttpServletRequest;
+import info.lmovse.blog.web.controller.BaseController;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
@@ -53,7 +55,8 @@ public class AuthController extends BaseController {
                               HttpServletResponse response) {
         Integer error_count = cache.get("login_error_count");
         try {
-            User user = usersService.login(username, password);
+            Subject subject = SecurityUtils.getSubject();
+            User user = (User) subject.getPrincipal();
             request.getSession().setAttribute(AppConst.LOGIN_SESSION_KEY, user);
             if (StringUtils.isNotBlank(remeber_me)) {
                 TaleUtils.setCookie(response, user.getUid());
@@ -86,6 +89,8 @@ public class AuthController extends BaseController {
     public void logout(HttpSession session, HttpServletResponse response) {
         session.removeAttribute(AppConst.LOGIN_SESSION_KEY);
         Cookie cookie = new Cookie(AppConst.USER_IN_COOKIE, "");
+        Subject subject = SecurityUtils.getSubject();
+        subject.logout();
         cookie.setValue(null);
         cookie.setMaxAge(0);// 立即销毁cookie
         cookie.setPath("/");

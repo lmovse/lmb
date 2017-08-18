@@ -12,10 +12,9 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
  * Tomorrow is a nice day.
  */
 @Configuration
-public class AppConfigurer {
+public class RedisConfigurer {
 
     @Bean
-    @SuppressWarnings("unchecked")
     public RedisTemplate redisTemplate(RedisConnectionFactory redisConnectionFactory) {
         RedisTemplate redisTemplate = new RedisTemplate();
         redisTemplate.setConnectionFactory(redisConnectionFactory);

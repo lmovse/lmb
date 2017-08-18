@@ -10,9 +10,6 @@ import info.lmovse.blog.util.TaleUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,15 +27,8 @@ public class CommentServiceImpl extends AbstractServiceImpl<Comment> implements 
     @Resource
     private ContentMapper contentMapper;
 
-    @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
-
-    @Resource(name = "redisTemplate")
-    private ValueOperations<String, Object> valueOps;
-
     @Override
     public void save(Comment comment) {
-        // 参数检测
         if (null == comment) {
             throw new ServiceException("评论对象为空");
         }
@@ -67,27 +57,8 @@ public class CommentServiceImpl extends AbstractServiceImpl<Comment> implements 
         comment.setCreated(DateKit.getCurrentUnixTime());
         super.save(comment);
 
-        // 新增評論的時候更新文章緩存
-        Integer cid = comment.getCid();
-        try {
-            Content content = (Content) valueOps.get(prefixKey(cid));
-            if (StringUtils.isNotBlank(content.getSlug())) {
-                content = (Content) valueOps.get(prefixKey(content.getSlug()));
-                content.setCommentsNum(content.getCommentsNum() + 1);
-                valueOps.set(prefixKey(content.getSlug()), content);
-            } else {
-                content.setCommentsNum(content.getCommentsNum() + 1);
-                valueOps.set(prefixKey(content.getCid()), content);
-            }
-            // 缓存中评论数量满 10 条时同步到数据库中
-            if (content.getCommentsNum() % 10 == 0) {
-                Content uContent = new Content();
-                uContent.setCommentsNum(content.getCommentsNum());
-                contentMapper.updateByPrimaryKeySelective(uContent);
-            }
-        } catch (Exception e) {
-            LOGGER.error("更新緩存失敗！失敗詳情：{}", e.getMessage(), e);
-        }
+        // 更新文章评论数量
+        updateComments(comment.getCid());
     }
 
     @Override
@@ -99,40 +70,27 @@ public class CommentServiceImpl extends AbstractServiceImpl<Comment> implements 
 
     @Override
     public void deleteById(String coid) {
-        // 删除评论
         if (null == coid) {
             throw new ServiceException("主键为空");
         }
+
+        // 删除评论
         Comment comment = super.findById(coid);
         if (comment == null) {
             throw new ServiceException("没有此评论");
         }
         super.deleteById(coid);
 
-        // 刪除評論的時候更新緩存
-        Integer cid = comment.getCid();
-        try {
-            Content content = (Content) valueOps.get(prefixKey(cid));
-            if (StringUtils.isNotBlank(content.getSlug())) {
-                content = (Content) valueOps.get(prefixKey(content.getSlug()));
-                content.setCommentsNum(content.getCommentsNum() - 1);
-                valueOps.set(prefixKey(content.getSlug()), content);
-            } else {
-                content.setCommentsNum(content.getCommentsNum() - 1);
-                valueOps.set(prefixKey(content.getCid()), content);
-            }
-            if (content.getCommentsNum() % 10 == 0) {
-                Content uContent = new Content();
-                uContent.setCommentsNum(content.getCommentsNum());
-                contentMapper.updateByPrimaryKeySelective(uContent);
-            }
-        } catch (Exception e) {
-            LOGGER.error("更新緩存失敗！失敗詳情：{}", e.getMessage(), e);
-        }
+        // 更新文章评论数量
+        updateComments(comment.getCid());
     }
 
-    private String prefixKey(Object key) {
-        return "content:" + key.toString();
+    private void updateComments(Integer cid) {
+        Content content = contentMapper.selectByPrimaryKey(cid);
+        Content uContent = new Content();
+        uContent.setCid(content.getCid());
+        uContent.setCommentsNum(content.getCommentsNum() + 1);
+        contentMapper.updateByPrimaryKeySelective(uContent);
     }
 
 }

@@ -12,6 +12,8 @@ import info.lmovse.blog.service.IContentService;
 import info.lmovse.blog.service.IMetaService;
 import info.lmovse.blog.service.ISiteService;
 import info.lmovse.blog.web.controller.BaseController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.web.ErrorAttributes;
 import org.springframework.boot.autoconfigure.web.ErrorController;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,12 +21,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 
 import static info.lmovse.blog.constant.AppConst.*;
 
@@ -46,6 +50,11 @@ public class SiteController extends BaseController implements ErrorController {
 
     @Resource
     private ICommentService commentService;
+
+    private static final String ERROR_PATH = "/error";
+
+    @Autowired
+    private ErrorAttributes errorAttributes;
 
     /**
      * 分类页
@@ -196,18 +205,18 @@ public class SiteController extends BaseController implements ErrorController {
 
     /**
      * 自定義錯誤處理頁面
-     * @param e
-     * @return
      */
-    @RequestMapping("/error")
-    public String error(Exception e) {
-        e.printStackTrace();
+    @RequestMapping(ERROR_PATH)
+    public String error(HttpServletRequest request, Model model, Exception e) {
+        Map<String, Object> errorMap = errorAttributes
+                .getErrorAttributes(new ServletRequestAttributes(request), false);
+        model.addAttribute("errors", errorMap);
         return "comm/error_404";
     }
 
     @Override
     public String getErrorPath() {
-        return "comm/error_404";
+        return ERROR_PATH;
     }
 
 }

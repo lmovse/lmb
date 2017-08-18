@@ -21,9 +21,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
@@ -50,15 +47,8 @@ public class ContentServiceImpl extends AbstractServiceImpl<Content> implements 
     @Resource
     private RelationshipMapper relationshipMapper;
 
-    @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
-
-    @Resource(name = "redisTemplate")
-    private ValueOperations<String, Object> valueOps;
-
     @Override
     public void publish(Content content) {
-        // 参数检测
         if (content == null) {
             throw new ServiceException("文章对象为空");
         }
@@ -113,10 +103,6 @@ public class ContentServiceImpl extends AbstractServiceImpl<Content> implements 
 
     @Override
     public Content findById(String id) {
-        // 判断是否缓存，缓存了从缓存中读取
-        Content contentR = findFromRedis(id);
-        if (contentR != null) return contentR;
-
         Content content = null;
 
         // 如果有 slug 属性，通过 slug 查询，否则通过 ID 查询
@@ -128,8 +114,8 @@ public class ContentServiceImpl extends AbstractServiceImpl<Content> implements 
             content = super.findById(id);
         }
 
-        // 放入缓存中
-        putToRedis(id, content);
+        // 更新文章点击数量
+        updateArticleHit(content);
         return content;
     }
 
@@ -155,11 +141,12 @@ public class ContentServiceImpl extends AbstractServiceImpl<Content> implements 
 
     @Override
     public void deleteById(String cid) {
-        // 从主表中删除
         Content content = findById(cid);
         if (content == null) {
             throw new ServiceException("文章不存在！");
         }
+
+        // 从主表中删除
         super.deleteById(cid);
 
         // 从中间表与评论表中删除
@@ -173,14 +160,10 @@ public class ContentServiceImpl extends AbstractServiceImpl<Content> implements 
         if (!comments.isEmpty()) {
             commentMapper.deleteByExample(example);
         }
-
-        // 从缓存中删除
-        deleteRedis(content);
     }
 
     @Override
     public void update(Content content) {
-        // 参数检测
         if (null == content || null == content.getCid()) {
             throw new ServiceException("文章对象不能为空");
         }
@@ -215,7 +198,7 @@ public class ContentServiceImpl extends AbstractServiceImpl<Content> implements 
         content.setContent(EmojiParser.parseToAliases(content.getContent()));
         super.update(content);
 
-        // 从中间表中删除记录
+        // 从标签分类中间表中删除记录
         Integer cid = content.getCid();
         Example example = new Example(Relationship.class);
         example.createCriteria().andEqualTo("cid", cid);
@@ -227,9 +210,6 @@ public class ContentServiceImpl extends AbstractServiceImpl<Content> implements 
         // 保存标签与分类
         saveMetas(cid, content.getTags(), Types.TAG.getType());
         saveMetas(cid, content.getCategories(), Types.CATEGORY.getType());
-
-        // 从缓存中删除
-        deleteRedis(content);
     }
 
     private void saveMetas(Integer cid, String name, String type) {
@@ -251,64 +231,11 @@ public class ContentServiceImpl extends AbstractServiceImpl<Content> implements 
         }
     }
 
-    private void putToRedis(String id, Content content) {
-        try {
-            if (!NumberUtils.isDigits(id)) {
-                // 当通过 slug 访问时，需要同时存储两条缓存，用于操作评论时通过 cid 查找缓存
-                valueOps.set(prefixKey(content.getSlug()), content);
-                valueOps.set(prefixKey(content.getCid()), content);
-            } else {
-                valueOps.set(prefixKey(content.getCid()), content);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            LOGGER.error("添加缓存失败，失败详情：{}", e.getMessage(), e);
-        }
-    }
-
-    private Content findFromRedis(String id) {
-        try {
-            if (redisTemplate.hasKey(prefixKey(id))) {
-                Content content = (Content) valueOps.get(prefixKey(id));
-                content.setHits(content.getHits() + 1);
-                if (content.getHits() % 100 == 0) {
-                    updateArticleHit(content);
-                }
-                if (NumberUtils.isDigits(id)) {
-                    valueOps.set(prefixKey(content.getCid()), content);
-                } else {
-                    valueOps.set(prefixKey(content.getSlug()), content);
-                }
-                return content;
-            }
-        } catch (Exception e) {
-            LOGGER.error("查询缓存失败，失败详情：{}", e.getMessage(), e);
-        }
-        return null;
-    }
-
     private void updateArticleHit(Content content) {
         Content temp = new Content();
-        temp.setHits(content.getHits());
+        temp.setCid(content.getCid());
+        temp.setHits(content.getHits() + 1);
         mapper.updateByPrimaryKeySelective(temp);
-    }
-
-    private void deleteRedis(Content content) {
-        Integer cid = content.getCid();
-        try {
-            if (StringUtils.isNotBlank(content.getSlug())) {
-                redisTemplate.delete(prefixKey(content.getSlug()));
-                redisTemplate.delete(prefixKey(cid));
-            } else {
-                redisTemplate.delete(prefixKey(cid));
-            }
-        } catch (Exception e) {
-            LOGGER.error("删除缓存失败，失败详情：{}", e.getMessage(), e);
-        }
-    }
-
-    private String prefixKey(Object key) {
-        return "content:" + key.toString();
     }
 
 }

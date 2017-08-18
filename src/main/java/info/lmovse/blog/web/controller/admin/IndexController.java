@@ -53,14 +53,13 @@ public class IndexController extends BaseController {
      * @return
      */
     @GetMapping(value = {"", "/index"})
-    public String index(Model model) {
-        LOGGER.info("Enter admin index method");
+    public String index(Model model, HttpServletRequest request) {
         List<Comment> comments = siteService.recentComments(5);
         List<Content> contents = siteService.recentContents(5);
         Statistics statistics = siteService.getStatistics();
 
         // 取最新的 10 条日志
-        Example example =  new Example(Log.class);
+        Example example = new Example(Log.class);
         example.setOrderByClause("created desc");
         PageInfo<Log> page = logService.findPageByExample(example, 1, 10);
 
@@ -68,7 +67,6 @@ public class IndexController extends BaseController {
         model.addAttribute("articles", contents);
         model.addAttribute("statistics", statistics);
         model.addAttribute("logs", page.getList());
-        LOGGER.info("Exit admin index method");
         return "admin/index";
     }
 
@@ -79,7 +77,6 @@ public class IndexController extends BaseController {
     public String profile() {
         return "admin/profile";
     }
-
 
     /**
      * 保存个人信息

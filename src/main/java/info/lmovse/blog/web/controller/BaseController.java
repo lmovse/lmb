@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
  * Tomorrow is a nice day.
  */
 public abstract class BaseController {
-
     protected static String THEME_PREFIX = "themes/default/";
     protected MapCache cache = MapCache.single();
 

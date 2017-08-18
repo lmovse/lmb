@@ -101,7 +101,6 @@ public class MetaServiceImpl extends AbstractServiceImpl<Meta> implements IMetaS
 
     @Override
     public void save(Meta meta) {
-        // 参数检测
         String name = meta.getName();
         String type = meta.getType();
         if (StringUtils.isBlank(name) || StringUtils.isBlank(type)) {

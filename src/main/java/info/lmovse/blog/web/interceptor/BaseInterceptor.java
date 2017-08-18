@@ -42,6 +42,7 @@ public class BaseInterceptor extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object o) throws Exception {
         String uri = request.getRequestURI();
+
         //请求拦截处理
         User user = TaleUtils.getLoginUser(request);
         if (null == user) {
@@ -53,16 +54,9 @@ public class BaseInterceptor extends HandlerInterceptorAdapter {
             }
         }
 
-        // 管理员也是一个用户，登录时同样在此记录登录日志
-        if (uri.startsWith("/admin") && !uri.startsWith("/admin/login") && null == user) {
-            response.sendRedirect(request.getContextPath() + "/admin/login");
-            return false;
-        }
-
         //设置当前浏览用户的 token
         if (request.getMethod().equals("GET")) {
             String csrf_token = UUID.UU64();
-
             // 默认存储 30 分钟
             cache.hset(Types.CSRF_TOKEN.getType(), csrf_token, uri, 30 * 60);
             request.setAttribute("_csrf_token", csrf_token);
