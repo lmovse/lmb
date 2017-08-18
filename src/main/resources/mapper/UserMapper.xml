@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="info.lmovse.blog.mapper.UserMapper">
+<mapper namespace="info.lmovse.blog.core.mapper.UserMapper">
     <sql id="Base_Column_List">
         uid, username, password, email, home_url, screen_name, created, activated, logged,
         group_name
     </sql>
-    <resultMap id="BaseResultMap" type="info.lmovse.blog.pojo.po.User">
+    <resultMap id="BaseResultMap" type="info.lmovse.blog.core.pojo.po.User">
         <id column="uid" jdbcType="INTEGER" property="uid" />
         <result column="username" jdbcType="VARCHAR" property="username" />
         <result column="password" jdbcType="VARCHAR" property="password" />

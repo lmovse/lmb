@@ -64,13 +64,13 @@
 
         <!-- 对包进行更详细的配置 -->
         <!-- additivity 表示是否追加,防止重复,因为 root 已经接收过一次了 -->
-        <logger name="info.lmovse.blog.mapper" level="DEBUG" additivity="true">
+        <logger name="info.lmovse.blog.core.mapper" level="DEBUG" additivity="true">
             <appender-ref ref="db_log"/>
         </logger>
-        <logger name="info.lmovse.blog.web.controller" level="DEBUG" additivity="false">
+        <logger name="info.lmovse.blog.core.web.controllero" level="DEBUG" additivity="false">
             <appender-ref ref="web_log"/>
         </logger>
-        <logger name="info.lmovse.blog.service" level="DEBUG" additivity="false">
+        <logger name="info.lmovse.blog.core.service" level="DEBUG" additivity="false">
             <appender-ref ref="service_log"/>
         </logger>
     </loggers>

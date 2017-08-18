@@ -1,5 +1,6 @@
 package info.lmovse.blog.configurer;
 
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +12,7 @@ import org.springframework.core.io.ClassPathResource;
  * Tomorrow is a nice day.
  */
 @Configuration
+@EnableCaching
 public class EHCacheConfig {
 
     /**

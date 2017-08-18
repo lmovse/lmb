@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="info.lmovse.blog.mapper.MetaMapper">
+<mapper namespace="info.lmovse.blog.core.mapper.MetaMapper">
 
-    <resultMap id="BaseResultMap" type="info.lmovse.blog.pojo.po.Meta">
+    <resultMap id="BaseResultMap" type="info.lmovse.blog.core.pojo.po.Meta">
         <id column="mid" jdbcType="INTEGER" property="mid"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="slug" jdbcType="VARCHAR" property="slug"/>
@@ -12,7 +12,7 @@
         <result column="parent" jdbcType="INTEGER" property="parent"/>
     </resultMap>
 
-    <resultMap id="MetaDto" type="info.lmovse.blog.pojo.dto.MetaDto" extends="BaseResultMap">
+    <resultMap id="MetaDto" type="info.lmovse.blog.core.pojo.dto.MetaDto" extends="BaseResultMap">
         <result column="count" property="count" jdbcType="INTEGER"/>
     </resultMap>
 

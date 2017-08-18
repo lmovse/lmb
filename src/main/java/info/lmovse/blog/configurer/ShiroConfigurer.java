@@ -1,7 +1,7 @@
 package info.lmovse.blog.configurer;
 
-import info.lmovse.blog.shiro.AuthRealm;
-import info.lmovse.blog.shiro.MyCredentialsMatcher;
+import info.lmovse.blog.core.shiro.AuthRealm;
+import info.lmovse.blog.core.shiro.MyCredentialsMatcher;
 import org.apache.shiro.authc.credential.CredentialsMatcher;
 import org.apache.shiro.cache.CacheManager;
 import org.apache.shiro.cache.ehcache.EhCacheManager;
@@ -75,8 +75,9 @@ public class ShiroConfigurer {
         filterChainDefinition.put("/**/images/**", "anon");
         filterChainDefinition.put("/**/img/**", "anon");
         filterChainDefinition.put("/**/plugins/**", "anon");
-        filterChainDefinition.put("/**", "authc");
-        filterChainDefinition.put("/*.*", "authc");
+        filterChainDefinition.put("/admin/**", "authc");
+        filterChainDefinition.put("/**", "anon");
+        filterChainDefinition.put("/*.*", "anon");
         bean.setFilterChainDefinitionMap(filterChainDefinition);
         return bean;
     }

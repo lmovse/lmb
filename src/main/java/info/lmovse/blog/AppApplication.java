@@ -6,9 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-@MapperScan("info.lmovse.blog.mapper")
+@MapperScan("info.lmovse.blog.core.mapper")
 @SpringBootApplication
-@EnableCaching
 @EnableTransactionManagement
 public class AppApplication {
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="info.lmovse.blog.mapper.ContentMapper">
-    <resultMap id="baseResultMap" type="info.lmovse.blog.pojo.po.Content">
+<mapper namespace="info.lmovse.blog.core.mapper.ContentMapper">
+    <resultMap id="baseResultMap" type="info.lmovse.blog.core.pojo.po.Content">
         <id column="cid" jdbcType="INTEGER" property="cid"/>
         <result column="title" jdbcType="VARCHAR" property="title"/>
         <result column="slug" jdbcType="VARCHAR" property="slug"/>
@@ -24,10 +24,10 @@
         comments_num, allow_comment, allow_ping, allow_feed
     </sql>
 
-    <resultMap id="archiveResultMap" type="info.lmovse.blog.pojo.bo.Archive">
+    <resultMap id="archiveResultMap" type="info.lmovse.blog.core.pojo.bo.Archive">
         <result column="date" jdbcType="INTEGER" property="date"/>
         <result column="count" jdbcType="VARCHAR" property="count"/>
-        <collection property="articles" ofType="info.lmovse.blog.pojo.po.Content" resultMap="baseResultMap"/>
+        <collection property="articles" ofType="info.lmovse.blog.core.pojo.po.Content" resultMap="baseResultMap"/>
     </resultMap>
 
     <select id="findArchives" resultMap="archiveResultMap">
