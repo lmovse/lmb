@@ -9,7 +9,7 @@ import java.io.Serializable;
 /**
  * @author 
  */
-@Table(name = "t_metas")
+@Table(name = "t_meta")
 public class Meta implements Serializable {
     /**
      * 项目主键

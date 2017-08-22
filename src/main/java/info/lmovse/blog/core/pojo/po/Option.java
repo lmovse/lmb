@@ -7,7 +7,7 @@ import java.io.Serializable;
 /**
  * @author 
  */
-@Table(name = "t_options")
+@Table(name = "t_option")
 public class Option implements Serializable {
     /**
      * 配置名称

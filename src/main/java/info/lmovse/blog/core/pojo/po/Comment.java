@@ -7,7 +7,7 @@ import java.io.Serializable;
 /**
  * @author 
  */
-@Table(name = "t_comments")
+@Table(name = "t_comment")
 public class Comment implements Serializable {
     /**
      * comment表主键

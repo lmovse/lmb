@@ -6,7 +6,7 @@ import java.io.Serializable;
 /**
  * @author 
  */
-@Table(name = "t_relationships")
+@Table(name = "t_relationship")
 public class Relationship implements Serializable {
     /**
      * 内容主键

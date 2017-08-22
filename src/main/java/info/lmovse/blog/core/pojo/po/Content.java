@@ -9,7 +9,7 @@ import java.io.Serializable;
 /**
  * @author 
  */
-@Table(name = "t_contents")
+@Table(name = "t_content")
 public class Content implements Serializable {
     /**
      * post表主键

@@ -19,7 +19,7 @@
     </resultMap>
     <select id="findUserByName" parameterType="java.lang.String" resultMap="BaseResultMap">
         SELECT <include refid="Base_Column_List"/>
-        FROM t_users
+        FROM t_user
         WHERE username = #{userName}
     </select>
 </mapper>

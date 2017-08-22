@@ -36,10 +36,10 @@
         FROM (SELECT
         FROM_UNIXTIME(created, '%Y-%m') AS date,
         count(*) AS count
-        FROM t_contents
+        FROM t_content
         WHERE type = 'post' AND status = 'publish'
         GROUP BY date) b
-        LEFT JOIN t_contents t
+        LEFT JOIN t_content t
         ON FROM_UNIXTIME(t.created, '%Y-%m') = b.date AND t.type = 'post' AND t.status = 'publish'
         ORDER BY date;
     </select>
@@ -61,7 +61,7 @@
             t.allow_comment,
             t.allow_ping,
             t.allow_feed
-        FROM t_contents t LEFT JOIN t_relationships b ON t.cid = b.cid
+        FROM t_content t LEFT JOIN t_relationship b ON t.cid = b.cid
         WHERE b.mid = #{value} AND t.status = 'publish' AND t.type = 'post'
         ORDER BY t.created DESC
     </select>
@@ -69,7 +69,7 @@
     <select id="selectIds" resultType="java.lang.Integer">
         SELECT
             cid
-        FROM t_contents
+        FROM t_content
             WHERE type='post' AND status='publish'
         ORDER BY cid
     </select>

@@ -6,7 +6,7 @@ import java.io.Serializable;
 /**
  * @author 
  */
-@Table(name = "t_logs")
+@Table(name = "t_log")
 public class Log implements Serializable {
     /**
      * 日志主键
