@@ -31,6 +31,7 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
 
     private final Logger logger = LoggerFactory.getLogger(WebMvcConfigurer.class);
 
+    // 注入当前的工程环境
     @Value("${spring.profiles.active}")
     private String env;
 
@@ -46,7 +47,7 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         FastJsonHttpMessageConverter converter = new FastJsonHttpMessageConverter();
         FastJsonConfig config = new FastJsonConfig();
-        config.setSerializerFeatures(SerializerFeature.WriteMapNullValue,
+        config.setSerializerFeatures(SerializerFeature.WriteMapNullValue, // 空字段保留
                 SerializerFeature.WriteNullStringAsEmpty,
                 SerializerFeature.WriteNullNumberAsZero);
         converter.setFastJsonConfig(config);

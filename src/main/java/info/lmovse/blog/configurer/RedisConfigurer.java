@@ -23,7 +23,6 @@ public class RedisConfigurer {
         redisTemplate.setDefaultSerializer(new GenericJackson2JsonRedisSerializer());
         redisTemplate.setKeySerializer(new StringRedisSerializer());
 
-        redisTemplate.opsForValue().set("15570152684", "love");
         return redisTemplate;
     }
 
